@@ -86,6 +86,11 @@ gradlePlugin {
     vcsUrl.set("https://github.com/SirEdvin/Peripheralium")
     group = projectGroup
     version = projectVersion
+
+}
+
+tasks.publish {
+    dependsOn("check")
 }
 
 publishing {
