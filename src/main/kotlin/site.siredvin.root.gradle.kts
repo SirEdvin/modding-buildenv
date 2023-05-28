@@ -28,7 +28,7 @@ val rootProjectDir = projectDir
 fun setupSubprojectExternal(subproject: Project) {
     subproject.apply(plugin = "maven-publish")
     subproject.apply(plugin = "com.diffplug.spotless")
-    subproject.apply(plugin = "peripheralium.base")
+    subproject.apply(plugin = "site.siredvin.base")
     subproject.apply(plugin = "peripheralium.linting")
     subproject.apply(plugin = "idea")
     if (subprojectShaking.withKotlin.get()) {
