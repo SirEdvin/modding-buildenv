@@ -13,6 +13,12 @@ repositories {
             includeGroup("site.siredvin")
         }
     }
+    maven("https://mvn.siredvin.site/snapshots") {
+        name = "SirEdvin's Minecraft repository"
+        content {
+            includeGroup("site.siredvin")
+        }
+    }
 }
 
 fun connectIntegrationRepositories(targetProject: Project) {
