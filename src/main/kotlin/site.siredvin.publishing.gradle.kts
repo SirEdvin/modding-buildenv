@@ -31,6 +31,12 @@ class PublishingShakingExtension(private val targetProject: Project) {
                 }
             }
         }
+        targetProject.tasks.withType(PublishToMavenRepository::class.java) {
+            this.dependsOn(targetProject.tasks.check)
+        }
+        targetProject.tasks.withType(PublishToMavenLocal::class.java) {
+            this.dependsOn(targetProject.tasks.check)
+        }
     }
 }
 

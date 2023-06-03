@@ -59,6 +59,11 @@ class ModPublishingExtension(private val targetProject: Project) {
                 mainFile.changelogType = "markdown"
                 requiredDependencies.get().forEach(mainFile::addRequirement)
                 requiredDependenciesCurseforge.get().forEach(mainFile::addRequirement)
+                try {
+                    val checkTask = targetProject.tasks.getByName("check")
+                    this.dependsOn(checkTask)
+                } catch (ignored: UnknownTaskException) {
+                }
             }
 
             targetProject.modrinth {
@@ -78,6 +83,11 @@ class ModPublishingExtension(private val targetProject: Project) {
                     requiredDependencies.get().forEach(required::project)
                     requiredDependenciesModrinth.get().forEach(required::project)
                 }
+            }
+
+            try {
+                targetProject.tasks.getByName("modrinth").dependsOn(targetProject.tasks.getByName("check"))
+            } catch (ignored: UnknownTaskException) {
             }
         }
     }
