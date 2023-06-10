@@ -17,6 +17,7 @@ repositories {
         name = "SirEdvin's Minecraft repository"
         content {
             includeGroup("site.siredvin")
+            includeGroup("cc.tweaked")
         }
     }
 }
