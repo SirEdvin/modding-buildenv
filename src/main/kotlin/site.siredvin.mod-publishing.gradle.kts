@@ -74,10 +74,11 @@ class ModPublishingExtension(private val targetProject: Project) {
                 versionType.set(MODRINTH_RELEASE_TYPE)
                 uploadFile.set(output.get())
                 gameVersions.add(minecraftVersion)
-                changelog.set(
-                    targetProject.changelog.renderItem(
-                        targetProject.changelog.get(modVersion).withHeader(false),
-                    ),
+                changelog.set(targetProject.provider {
+                        targetProject.changelog.renderItem(
+                            targetProject.changelog.get(modVersion).withHeader(false),
+                        )
+                    }
                 )
                 dependencies {
                     requiredDependencies.get().forEach(required::project)
