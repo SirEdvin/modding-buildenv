@@ -11,7 +11,7 @@ parchmentMc = "1.19.3"
 
 # Build tools
 changelog = "2.0.0"
-curseForgeGradle = "1.0.11"
+curseForgeGradle = "1.0.14"
 loom = "1.2.+"
 forgeGradle = "6.+"
 librarian = "1.+"
@@ -20,7 +20,7 @@ mixinGradle = "0.7.+"
 #nullAway = "0.9.9"
 quiltflower = "1.8.0"
 spotless = "6.17.0"
-#taskTree = "2.1.1"
+taskTree = "2.1.1"
 vanillaGradle = "0.2.1-SNAPSHOT"
 
 [libraries]
@@ -36,6 +36,7 @@ plugin-minotaur = { module = "com.modrinth.minotaur:Minotaur", version.ref = "mi
 plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 plugin-vanillaGradle = { module = "org.spongepowered:vanillagradle", version.ref = "vanillaGradle" }
 plugin-changelog = {module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog"}
+plugin-taskTree = {module = "com.dorongold.plugins:task-tree", version.ref="taskTree"}
 
 [plugins]
 spotless = {id = "com.diffplug.spotless", version.ref = "spotless"}

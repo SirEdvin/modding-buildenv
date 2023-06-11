@@ -50,12 +50,11 @@ class ModPublishingExtension(private val targetProject: Project) {
                 enabled = apiToken != ""
 
                 val mainFile = upload(CURSEFORGE_ID, output.get().archiveFile)
-                // Power of SquidDev is truly terrifuning
-                dependsOn(output) // See https://github.com/Darkhax/CurseForgeGradle/pull/7.
                 mainFile.releaseType = CURSEFORGE_RELEASE_TYPE
                 mainFile.gameVersions.add(minecraftVersion)
-                mainFile.changelog =
+                mainFile.changelog = closureOf<String> {
                     targetProject.changelog.renderItem(targetProject.changelog.get(modVersion).withHeader(false))
+                }
                 mainFile.changelogType = "markdown"
                 requiredDependencies.get().forEach(mainFile::addRequirement)
                 requiredDependenciesCurseforge.get().forEach(mainFile::addRequirement)

@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.plugin.forgeGradle)
     implementation(libs.plugin.librarian)
     implementation(libs.plugin.mixinGradle)
+    implementation(libs.plugin.taskTree)
 }
 
 //spotless {
