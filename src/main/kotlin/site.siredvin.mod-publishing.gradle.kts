@@ -52,9 +52,9 @@ class ModPublishingExtension(private val targetProject: Project) {
                 val mainFile = upload(CURSEFORGE_ID, output.get().archiveFile)
                 mainFile.releaseType = CURSEFORGE_RELEASE_TYPE
                 mainFile.gameVersions.add(minecraftVersion)
-                mainFile.changelog = closureOf<String> {
+                mainFile.changelog = KotlinClosure0({
                     targetProject.changelog.renderItem(targetProject.changelog.get(modVersion).withHeader(false))
-                }
+                })
                 mainFile.changelogType = "markdown"
                 requiredDependencies.get().forEach(mainFile::addRequirement)
                 requiredDependenciesCurseforge.get().forEach(mainFile::addRequirement)
