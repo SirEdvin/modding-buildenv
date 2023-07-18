@@ -1,17 +1,9 @@
 [versions]
-
-kotlin = "1.8.21"
-cc-tweaked = "1.104.0"
-
-# Forge dependencies
-forge = "45.0.42"
-forge-kotlin = "4.2.0"
-parchment = "2023.03.12"
-parchmentMc = "1.19.3"
+kotlin = "1.8.22"
 
 # Build tools
-changelog = "2.0.0"
-curseForgeGradle = "1.0.14"
+changelog = "2.1.2"
+curseForgeGradle = "1.1.15"
 loom = "1.2.+"
 forgeGradle = "6.+"
 librarian = "1.+"
@@ -22,6 +14,7 @@ quiltflower = "1.8.0"
 spotless = "6.17.0"
 taskTree = "2.1.1"
 vanillaGradle = "0.2.1-SNAPSHOT"
+githubRelease = "2.4.1"
 
 [libraries]
 plugin-curseForgeGradle = { module = "net.darkhax.curseforgegradle:CurseForgeGradle", version.ref = "curseForgeGradle" }
@@ -37,6 +30,7 @@ plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", ver
 plugin-vanillaGradle = { module = "org.spongepowered:vanillagradle", version.ref = "vanillaGradle" }
 plugin-changelog = {module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog"}
 plugin-taskTree = {module = "com.dorongold.plugins:task-tree", version.ref="taskTree"}
+plugin-github = {module = "com.github.breadmoirai:github-release", version.ref="githubRelease"}
 
 [plugins]
 spotless = {id = "com.diffplug.spotless", version.ref = "spotless"}

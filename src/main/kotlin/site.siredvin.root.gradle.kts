@@ -1,27 +1,12 @@
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extra
+import site.siredvin.peripheralium.gradle.collectSecrets
 
 plugins {
     java
 }
 
-fun getenv(path: String = ".env"): Map<String, String> {
-    val env = hashMapOf<String, String>()
-
-    val file = File(path)
-    if (file.exists()) {
-        file.readLines().forEach { line ->
-            val splitResult = line.split("=")
-            if (splitResult.size > 1) {
-                env[splitResult[0].trim()] = splitResult[1].trim()
-            }
-        }
-    }
-
-    return env
-}
-
-val secretEnv = getenv()
+val secretEnv = collectSecrets()
 val projectGroup = properties["projectGroup"] ?: "site.siredvin"
 val rootProjectDir = projectDir
 
@@ -45,7 +30,6 @@ fun setupSubprojectExternal(subproject: Project) {
             implementation("org.jetbrains.kotlin:kotlin-stdlib:${subprojectShaking.kotlinVersion.get()}")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${subprojectShaking.kotlinCoroutinesVersion.get()}")
             implementation("org.jetbrains.kotlinx:atomicfu-jvm:${subprojectShaking.kotlinAtomicfuVersion.get()}")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:${subprojectShaking.kotlinDatetimeVersion.get()}")
         }
     }
 }
@@ -55,13 +39,11 @@ class SubProjectShakingExtension(targetProject: Project) {
     val kotlinVersion: Property<String> = targetProject.objects.property(String::class.java)
     val kotlinCoroutinesVersion: Property<String> = targetProject.objects.property(String::class.java)
     val kotlinAtomicfuVersion: Property<String> = targetProject.objects.property(String::class.java)
-    val kotlinDatetimeVersion: Property<String> = targetProject.objects.property(String::class.java)
 
     init {
         kotlinVersion.convention("1.8.21")
         kotlinCoroutinesVersion.convention("1.6.4")
         kotlinAtomicfuVersion.convention("0.20.2")
-        kotlinDatetimeVersion.convention("0.4.0")
     }
 
     fun setupSubproject(subproject: Project) {

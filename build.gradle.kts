@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.plugin.librarian)
     implementation(libs.plugin.mixinGradle)
     implementation(libs.plugin.taskTree)
+    implementation(libs.plugin.github)
 }
 
 //spotless {
