@@ -1,6 +1,9 @@
 import org.jetbrains.changelog.date
 import org.jetbrains.changelog.Changelog
 import site.siredvin.peripheralium.gradle.collectSecrets
+import java.nio.file.Paths
+import kotlin.io.path.name
+import kotlin.io.path.pathString
 
 plugins {
     java
@@ -19,7 +22,7 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
 
     config.targetProject.changelog {
         version.set(config.targetProject.version.toString())
-        path.set("CHANGELOG.md")
+        path.set(Paths.get(config.targetProject.rootDir.absolutePath, "CHANGELOG.md").pathString)
         header.set(provider { "[${version.get()}] - ${date()}" })
         itemPrefix.set("-")
         keepUnreleasedSection.set(true)
