@@ -73,3 +73,5 @@ class GithubShakingExtension(val targetProject: Project) {
     }
 }
 
+val githubShaking: GithubShakingExtension = GithubShakingExtension(project)
+project.extensions.add("githubShaking", githubShaking)
