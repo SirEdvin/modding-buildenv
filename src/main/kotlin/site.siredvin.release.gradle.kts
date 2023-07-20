@@ -19,6 +19,7 @@ plugins {
 fun configureGithubAndChangelog(config: GithubShakingExtension) {
     val minecraftVersion: String by config.targetProject.extra
     val modVersion: String by config.targetProject.extra
+    val isUnstable = modVersion.split("-").size > 1
 
     val secretEnv = collectSecrets()
     val githubToken = secretEnv["GITHUB_TOKEN"] ?: System.getenv("GITHUB_TOKEN") ?: ""
@@ -43,10 +44,19 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
         repo.set(config.projectRepo.get())
         setToken(githubToken)
         targetCommitish.set(config.modBranch.get())
-        setBody(changelog.renderItem(
-            changelog.getUnreleased().withHeader(false).withEmptySections(false),
-            Changelog.OutputType.MARKDOWN
-        ))
+        setBody(provider {
+            if (isUnstable) {
+                changelog.renderItem(
+                    changelog.getUnreleased().withHeader(false).withEmptySections(false),
+                    Changelog.OutputType.MARKDOWN
+                )
+            } else {
+                changelog.renderItem(
+                    changelog.getLatest().withHeader(false).withEmptySections(false),
+                    Changelog.OutputType.MARKDOWN
+                )
+            }
+        })
         prerelease.set(config.preRelease.get())
         dryRun.set(config.dryRun.get())
         if (config.useForge.get()) {
