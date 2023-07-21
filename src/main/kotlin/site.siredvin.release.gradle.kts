@@ -74,9 +74,11 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
             .writerWithDefaultPrettyPrinter()
             .writeValueAsString(mapOf(
                 "status" to """
-            New ${config.projectRepo.get().capitalize()} release! Version $modVersion for minecraft $minecraftVersion released!
+            New #${config.mastodonProjectName.get()}, addon for #ComputerCraft  release! Version $modVersion for minecraft $minecraftVersion released!
             
             You can find more details by github release notes: https://github.com/${config.projectOwner.get()}/${config.projectRepo.get()}/releases/tag/v$minecraftVersion-$modVersion
+            
+            #ModdedMinecraft #fabricmc
         """.trimIndent()
             ))
         val url = URL("https://mastodon.social/api/v1/statuses")
@@ -98,6 +100,8 @@ class GithubShakingExtension(val targetProject: Project) {
     val dryRun: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useFabric: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useForge: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val mastodonProjectName: Property<String> = targetProject.objects.property(String::class.java)
+    val mastodonTags: ListProperty<String> = targetProject.objects.listProperty(String::class.java)
     fun shake() {
         val modBaseName: String by targetProject.extra
         projectOwner.convention("siredvin")
@@ -105,6 +109,10 @@ class GithubShakingExtension(val targetProject: Project) {
         useFabric.convention(true)
         useForge.convention(true)
         dryRun.convention(false)
+        mastodonProjectName.convention(provider {
+            projectRepo.get().capitalize()
+        })
+        mastodonTags.convention(listOf())
 
         val modVersion: String by targetProject.extra
         val isUnstable = modVersion.split("-").size > 1
