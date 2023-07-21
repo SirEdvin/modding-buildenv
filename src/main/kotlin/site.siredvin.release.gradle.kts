@@ -78,7 +78,7 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
             
             You can find more details by github release notes: https://github.com/${config.projectOwner.get()}/${config.projectRepo.get()}/releases/tag/v$minecraftVersion-$modVersion
             
-            #ModdedMinecraft #fabricmc
+            #ModdedMinecraft #fabricmc #minecraftforge
         """.trimIndent()
             ))
         val url = URL("https://mastodon.social/api/v1/statuses")

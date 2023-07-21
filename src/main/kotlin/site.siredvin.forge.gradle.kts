@@ -11,7 +11,6 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
 
     targetProject.minecraft {
         val extractedLibs = targetProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
-        // So, this exists mostly because mapping for 1.19.4 forge are not complete (?)
         mappings(
             "parchment",
             "${extractedLibs.findVersion("parchmentMc").get()}-${
