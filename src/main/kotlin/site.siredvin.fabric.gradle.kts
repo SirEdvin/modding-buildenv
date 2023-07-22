@@ -3,7 +3,7 @@ plugins {
     id("fabric-loom")
 }
 
-fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectName: String, createRefmap: Boolean, versionMappings: Map<String, String>) {
+fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectName: String, createRefmap: Boolean, versionMappings: Map<String, String>, stablePlayer: Boolean) {
     val minecraftVersion: String by targetProject.extra
     val modBaseName: String by targetProject.extra
 
@@ -25,6 +25,8 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
         runs {
             named("client") {
                 configName = "Fabric Client"
+                if (stablePlayer)
+                    programArgs("--username=Player")
             }
             named("server") {
                 configName = "Fabric Server"
@@ -75,11 +77,13 @@ class FabricShakingExtension(private val targetProject: Project) {
     val accessWidener: Property<File> = targetProject.objects.property(File::class.java)
     val createRefmap: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val extraVersionMappings: MapProperty<String, String> = targetProject.objects.mapProperty(String::class.java, String::class.java)
+    val stablePlayer: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
 
     fun shake() {
+        stablePlayer.convention(false)
         createRefmap.convention(false)
         extraVersionMappings.convention(emptyMap())
-        configureFabric(targetProject, accessWidener.orNull, commonProjectName.get(), createRefmap.get(), extraVersionMappings.get())
+        configureFabric(targetProject, accessWidener.orNull, commonProjectName.get(), createRefmap.get(), extraVersionMappings.get(), stablePlayer.get())
     }
 }
 
