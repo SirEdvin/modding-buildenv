@@ -68,27 +68,32 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
     }
 
     config.targetProject.tasks.register("notifyMastodon") {
-
-        val objectMapper = ObjectMapper()
-        val requestBody: String = objectMapper
-            .writerWithDefaultPrettyPrinter()
-            .writeValueAsString(mapOf(
-                "status" to """
+        doLast {
+            val objectMapper = ObjectMapper()
+            val requestBody: String = objectMapper
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(
+                    mapOf(
+                        "status" to """
             New #${config.mastodonProjectName.get()}, addon for #ComputerCraft  release! Version $modVersion for minecraft $minecraftVersion released!
             
             You can find more details by github release notes: https://github.com/${config.projectOwner.get()}/${config.projectRepo.get()}/releases/tag/v$minecraftVersion-$modVersion
             
             #ModdedMinecraft #fabricmc #minecraftforge
         """.trimIndent()
-            ))
-        val url = URL("https://mastodon.social/api/v1/statuses")
-        val req = HttpRequest.newBuilder(url.toURI())
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $mastodonToken")
-            .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build()
-        val res = HttpClient.newHttpClient()
-            .send(req, HttpResponse.BodyHandlers.ofString(Charsets.UTF_8))
-        JsonSlurper().parseText(res.body())
+                    )
+                )
+            val url = URL("https://mastodon.social/api/v1/statuses")
+            val req = HttpRequest.newBuilder(url.toURI())
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer $mastodonToken")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build()
+            val res = HttpClient.newHttpClient()
+                .send(req, HttpResponse.BodyHandlers.ofString(Charsets.UTF_8))
+            if (res.statusCode() >= 400)
+                throw Exception(res.body())
+            JsonSlurper().parseText(res.body())
+        }
     }
 }
 
