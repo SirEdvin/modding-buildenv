@@ -22,6 +22,9 @@ tasks {
         options.release.set(javaVersion.toString().toInt())
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
         kotlinOptions { jvmTarget = javaVersion.toString() }
     }
 }
