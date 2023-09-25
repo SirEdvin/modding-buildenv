@@ -69,6 +69,7 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
                 source(project(":$commonProjectName").sourceSets.main.get().allSource)
             }
         }
+        targetProject.ext.set("releaseJar", "remapJar")
     }
 }
 
