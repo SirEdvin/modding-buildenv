@@ -1,3 +1,4 @@
+import gradle.kotlin.dsl.accessors._1bb2ec735d18b4acfdb4bb51482d0673.ext
 import org.gradle.jvm.tasks.Jar
 
 plugins {
@@ -111,7 +112,7 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
     }
 
     if (useJarJar) {
-        targetProject.setProperty("releaseJar", "jarJar")
+        targetProject.ext.set("releaseJar", "jarJar")
         jarJar.enable()
         tasks.jarJar {
             finalizedBy("reobfJarJar")
@@ -124,7 +125,7 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
         tasks.jar {
             archiveClassifier.set("")
         }
-        targetProject.setProperty("releaseJar", "jar")
+        targetProject.ext.set("releaseJar", "jar")
     }
 }
 

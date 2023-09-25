@@ -61,10 +61,10 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
         prerelease.set(config.preRelease.get())
         dryRun.set(config.dryRun.get())
         if (config.useForge.get()) {
-            releaseAssets.from(provider { project(":forge").tasks.getByName(project(":forge").property("releaseJar")?.toString() ?: "jar") })
+            releaseAssets.from(provider { project(":forge").tasks.getByName(project(":forge").ext.get("releaseJar")?.toString() ?: "jar") })
         }
         if (config.useFabric.get()) {
-            releaseAssets.from(provider { project(":fabric").tasks.getByName(project(":fabric").property("releaseJar")?.toString() ?: "remapJar") })
+            releaseAssets.from(provider { project(":fabric").tasks.getByName(project(":fabric").ext.get("releaseJar")?.toString() ?: "remapJar") })
         }
     }
 
