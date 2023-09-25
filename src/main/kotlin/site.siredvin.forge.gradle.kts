@@ -1,3 +1,5 @@
+import org.gradle.jvm.tasks.Jar
+
 plugins {
     `java`
     id("net.minecraftforge.gradle")
@@ -5,7 +7,7 @@ plugins {
     id("org.spongepowered.mixin")
 }
 
-fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: String, useMixins: Boolean, versionMappings: Map<String, String>) {
+fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: String, useMixins: Boolean, useJarJar: Boolean, versionMappings: Map<String, String>) {
     val minecraftVersion: String by targetProject.extra
     val modBaseName: String by targetProject.extra
 
@@ -104,18 +106,40 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
             }
         }
     }
+    tasks.jar {
+        finalizedBy("reobfJar")
+    }
+
+    if (useJarJar) {
+        targetProject.setProperty("releaseJar", "jarJar")
+        jarJar.enable()
+        tasks.jarJar {
+            finalizedBy("reobfJarJar")
+            archiveClassifier.set("")
+        }
+
+        tasks.assemble { dependsOn("jarJar") }
+
+    } else {
+        tasks.jar {
+            archiveClassifier.set("")
+        }
+        targetProject.setProperty("releaseJar", "jar")
+    }
 }
 
 class ForgeShakingExtension(private val targetProject: Project) {
     val commonProjectName: Property<String> = targetProject.objects.property(String::class.java)
     val useAT: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useMixins: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val useJarJar: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val extraVersionMappings: MapProperty<String, String> = targetProject.objects.mapProperty(String::class.java, String::class.java)
 
     fun shake() {
         useMixins.convention(false)
+        useJarJar.convention(false)
         extraVersionMappings.convention(emptyMap())
-        configureForge(targetProject, useAT.get(), commonProjectName.get(), useMixins.get(), extraVersionMappings.get())
+        configureForge(targetProject, useAT.get(), commonProjectName.get(), useMixins.get(), useJarJar.get(), extraVersionMappings.get())
     }
 }
 
@@ -130,9 +154,4 @@ repositories {
             includeGroup("thedarkcolour")
         }
     }
-}
-
-tasks.jar {
-    finalizedBy("reobfJar")
-    archiveClassifier.set("")
 }

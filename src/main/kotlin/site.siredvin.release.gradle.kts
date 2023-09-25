@@ -1,3 +1,4 @@
+import gradle.kotlin.dsl.accessors._1b29de386d3b3549f5d01fc2303ebdf1.jarJar
 import groovy.json.JsonSlurper
 import org.gradle.internal.impldep.com.fasterxml.jackson.databind.ObjectMapper
 import org.jetbrains.changelog.date
@@ -60,10 +61,10 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
         prerelease.set(config.preRelease.get())
         dryRun.set(config.dryRun.get())
         if (config.useForge.get()) {
-            releaseAssets.from(provider { project(":forge").tasks.jar })
+            releaseAssets.from(provider { project(":forge").tasks.getByName(project(":forge").property("releaseJar")?.toString() ?: "jar") })
         }
         if (config.useFabric.get()) {
-            releaseAssets.from(provider { project(":fabric").tasks.getByName("remapJar") })
+            releaseAssets.from(provider { project(":fabric").tasks.getByName(project(":fabric").property("releaseJar")?.toString() ?: "remapJar") })
         }
     }
 
@@ -105,6 +106,7 @@ class GithubShakingExtension(val targetProject: Project) {
     val dryRun: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useFabric: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useForge: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val useForgeJarJar: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val mastodonProjectName: Property<String> = targetProject.objects.property(String::class.java)
     val mastodonTags: ListProperty<String> = targetProject.objects.listProperty(String::class.java)
     fun shake() {
@@ -113,6 +115,7 @@ class GithubShakingExtension(val targetProject: Project) {
         projectRepo.convention(modBaseName)
         useFabric.convention(true)
         useForge.convention(true)
+        useForgeJarJar.convention(false)
         dryRun.convention(false)
         mastodonProjectName.convention(provider {
             projectRepo.get().capitalize()
