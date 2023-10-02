@@ -107,9 +107,6 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
             }
         }
     }
-    tasks.jar {
-        finalizedBy("reobfJar")
-    }
 
     if (useJarJar) {
         targetProject.ext.set("releaseJar", "jarJar")
@@ -118,11 +115,16 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
             finalizedBy("reobfJarJar")
             archiveClassifier.set("")
         }
+        tasks.jar {
+            finalizedBy("reobfJar")
+            archiveClassifier.set("slim")
+        }
 
         tasks.assemble { dependsOn("jarJar") }
 
     } else {
         tasks.jar {
+            finalizedBy("reobfJar")
             archiveClassifier.set("")
         }
         targetProject.ext.set("releaseJar", "jar")
