@@ -10,8 +10,10 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
     targetProject.dependencies {
         minecraft("com.mojang:minecraft:$minecraftVersion")
         mappings(loom.officialMojangMappings())
-        implementation(project(":$commonProjectName")) {
-            exclude("cc.tweaked")
+        if (commonProjectName.isNotEmpty()) {
+            implementation(project(":$commonProjectName")) {
+                exclude("cc.tweaked")
+            }
         }
     }
 
@@ -44,14 +46,20 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
     targetProject.tasks {
         val extractedLibs = targetProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
         processResources {
-            from(project(":$commonProjectName").sourceSets.main.get().resources)
+            if (commonProjectName.isNotEmpty()) {
+                from(project(":$commonProjectName").sourceSets.main.get().resources)
+            }
             inputs.property("version", targetProject.version)
             val basePropertyMap = mutableMapOf(
                 "version" to targetProject.version,
             )
             versionMappings.entries.forEach {
-                inputs.property("${it.key}Version", extractedLibs.findVersion(it.value).get())
-                basePropertyMap["${it.key}Version"] = extractedLibs.findVersion(it.value).get()
+                val versionForValue = extractedLibs.findVersion(it.value)
+                if (versionForValue.isEmpty) {
+                    error("Cannot find version for mapping ${it.value}")
+                }
+                inputs.property("${it.key}Version", versionForValue.get())
+                basePropertyMap["${it.key}Version"] = versionForValue.get()
             }
 
             filesMatching("fabric.mod.json") {
@@ -59,14 +67,16 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
             }
             exclude(".cache")
         }
-        withType<JavaCompile> {
-            if (this.name == "compileJava") {
-                source(project(":$commonProjectName").sourceSets.main.get().allSource)
+        if (commonProjectName.isNotEmpty()) {
+            withType<JavaCompile> {
+                if (this.name == "compileJava") {
+                    source(project(":$commonProjectName").sourceSets.main.get().allSource)
+                }
             }
-        }
-        withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-            if (this.name == "compileKotlin") {
-                source(project(":$commonProjectName").sourceSets.main.get().allSource)
+            withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+                if (this.name == "compileKotlin") {
+                    source(project(":$commonProjectName").sourceSets.main.get().allSource)
+                }
             }
         }
         targetProject.ext.set("releaseJar", "remapJar")

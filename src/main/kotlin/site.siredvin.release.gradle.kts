@@ -1,4 +1,3 @@
-import gradle.kotlin.dsl.accessors._1b29de386d3b3549f5d01fc2303ebdf1.jarJar
 import groovy.json.JsonSlurper
 import org.gradle.internal.impldep.com.fasterxml.jackson.databind.ObjectMapper
 import org.jetbrains.changelog.date

@@ -1,6 +1,3 @@
-import gradle.kotlin.dsl.accessors._1bb2ec735d18b4acfdb4bb51482d0673.ext
-import org.gradle.jvm.tasks.Jar
-
 plugins {
     `java`
     id("net.minecraftforge.gradle")
@@ -58,9 +55,12 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
         val extractedLibs = targetProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
         minecraft("net.minecraftforge:forge:$minecraftVersion-${extractedLibs.findVersion("forge").get()}")
 
-        compileOnly(project(":$commonProjectName")) {
-            exclude("cc.tweaked")
-            exclude("fuzs.forgeconfigapiport")
+        if (commonProjectName.isNotEmpty()) {
+
+            compileOnly(project(":$commonProjectName")) {
+                exclude("cc.tweaked")
+                exclude("fuzs.forgeconfigapiport")
+            }
         }
     }
 
@@ -79,7 +79,9 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
         val forgeVersion = extractedLibs.findVersion("forge").get()
 
         processResources {
-            from(project(":$commonProjectName").sourceSets.main.get().resources)
+            if (commonProjectName.isNotEmpty()) {
+                from(project(":$commonProjectName").sourceSets.main.get().resources)
+            }
 
             inputs.property("version", targetProject.version)
             inputs.property("forgeVersion", forgeVersion)
@@ -96,14 +98,16 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
             }
             exclude(".cache")
         }
-        withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-            if (name == "compileKotlin") {
-                source(project(":$commonProjectName").sourceSets.main.get().allSource)
+        if (commonProjectName.isNotEmpty()) {
+            withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+                if (name == "compileKotlin") {
+                    source(project(":$commonProjectName").sourceSets.main.get().allSource)
+                }
             }
-        }
-        withType<JavaCompile> {
-            if (name == "compileJava") {
-                source(project(":$commonProjectName").sourceSets.main.get().allSource)
+            withType<JavaCompile> {
+                if (name == "compileJava") {
+                    source(project(":$commonProjectName").sourceSets.main.get().allSource)
+                }
             }
         }
     }
