@@ -59,6 +59,9 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
         })
         prerelease.set(config.preRelease.get())
         dryRun.set(config.dryRun.get())
+        if (config.useRoot.get()) {
+            releaseAssets.from(provider { config.targetProject.tasks.getByName( config.targetProject.ext.get("releaseJar")?.toString() ?: config.rootJarName.get()) })
+        }
         if (config.useForge.get()) {
             releaseAssets.from(provider { project(":forge").tasks.getByName(project(":forge").ext.get("releaseJar")?.toString() ?: "jar") })
         }
@@ -104,6 +107,8 @@ class GithubShakingExtension(val targetProject: Project) {
     val preRelease: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val dryRun: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useFabric: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val useRoot: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val rootJarName: Property<String> = targetProject.objects.property(String::class.java)
     val useForge: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useForgeJarJar: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val mastodonProjectName: Property<String> = targetProject.objects.property(String::class.java)
@@ -114,6 +119,8 @@ class GithubShakingExtension(val targetProject: Project) {
         projectRepo.convention(modBaseName)
         useFabric.convention(true)
         useForge.convention(true)
+        useRoot.convention(false)
+        rootJarName.convention("remapJar")
         useForgeJarJar.convention(false)
         dryRun.convention(false)
         mastodonProjectName.convention(provider {
