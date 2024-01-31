@@ -4,7 +4,7 @@ kotlin = "1.8.22"
 # Build tools
 changelog = "2.1.2"
 curseForgeGradle = "1.1.15"
-loom = "1.2.+"
+loom = "1.5.+"
 forgeGradle = "6.+"
 librarian = "1.+"
 minotaur = "2.+"
