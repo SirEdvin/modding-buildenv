@@ -9,6 +9,7 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     id("groovy-gradle-plugin")
+    id("com.github.ben-manes.versions") version "0.51.0"
 }
 
 val projectVersion: String by extra

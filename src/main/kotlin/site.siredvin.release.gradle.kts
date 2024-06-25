@@ -38,13 +38,13 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
     }
 
     config.targetProject.githubRelease {
-        setTagName("v$minecraftVersion-$modVersion")
-        setReleaseName("v$minecraftVersion-$modVersion")
+        this.tagName.set("v$minecraftVersion-$modVersion")
+        this.releaseName.set("v$minecraftVersion-$modVersion")
         owner.set(config.projectOwner.get())
         repo.set(config.projectRepo.get())
         setToken(githubToken)
         targetCommitish.set(config.modBranch.get())
-        setBody(provider {
+        this.body.set(provider {
             if (isUnstable) {
                 changelog.renderItem(
                     changelog.getUnreleased().withHeader(false).withEmptySections(false),
