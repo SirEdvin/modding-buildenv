@@ -7,7 +7,7 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-val javaVersion = JavaVersion.VERSION_17
+val javaVersion = JavaVersion.VERSION_21
 java {
     toolchain { languageVersion.set(JavaLanguageVersion.of(javaVersion.toString())) }
     sourceCompatibility = javaVersion
