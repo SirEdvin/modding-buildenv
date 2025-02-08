@@ -11,6 +11,27 @@ val projectGroup = properties["projectGroup"] ?: "site.siredvin"
 val rootProjectDir = projectDir
 
 fun setupSubprojectExternal(subproject: Project) {
+    val javaVersion = subprojectShaking.javaVersion.get()
+    subproject.java {
+        toolchain { languageVersion.set(JavaLanguageVersion.of(javaVersion.toString())) }
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+        withSourcesJar()
+    }
+    subproject.tasks {
+        withType<JavaCompile> {
+            options.encoding = "UTF-8"
+            sourceCompatibility = javaVersion.toString()
+            targetCompatibility = javaVersion.toString()
+            options.release.set(javaVersion.toString().toInt())
+        }
+        withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+            kotlinOptions {
+                allWarningsAsErrors = true
+            }
+            kotlinOptions { jvmTarget = javaVersion.toString() }
+        }
+    }
     subproject.apply(plugin = "maven-publish")
     subproject.apply(plugin = "com.diffplug.spotless")
     subproject.apply(plugin = "site.siredvin.base")
@@ -39,11 +60,13 @@ class SubProjectShakingExtension(targetProject: Project) {
     val kotlinVersion: Property<String> = targetProject.objects.property(String::class.java)
     val kotlinCoroutinesVersion: Property<String> = targetProject.objects.property(String::class.java)
     val kotlinAtomicfuVersion: Property<String> = targetProject.objects.property(String::class.java)
+    val javaVersion: Property<JavaVersion> = targetProject.objects.property(JavaVersion::class.java)
 
     init {
         kotlinVersion.convention("1.8.21")
         kotlinCoroutinesVersion.convention("1.6.4")
         kotlinAtomicfuVersion.convention("0.20.2")
+        javaVersion.convention(JavaVersion.VERSION_17)
     }
 
     fun setupSubproject(subproject: Project) {

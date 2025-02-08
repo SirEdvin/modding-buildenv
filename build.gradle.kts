@@ -21,6 +21,7 @@ base {
     archivesName.set(projectName)
     version = projectVersion
 }
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 // Duplicated in settings.gradle.kts
 repositories {

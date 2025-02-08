@@ -7,28 +7,6 @@ plugins {
     id("com.diffplug.spotless")
 }
 
-val javaVersion = JavaVersion.VERSION_21
-java {
-    toolchain { languageVersion.set(JavaLanguageVersion.of(javaVersion.toString())) }
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    withSourcesJar()
-}
-tasks {
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-        sourceCompatibility = javaVersion.toString()
-        targetCompatibility = javaVersion.toString()
-        options.release.set(javaVersion.toString().toInt())
-    }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            allWarningsAsErrors = true
-        }
-        kotlinOptions { jvmTarget = javaVersion.toString() }
-    }
-}
-
 spotless {
     encoding = StandardCharsets.UTF_8
     lineEndings = LineEnding.UNIX
