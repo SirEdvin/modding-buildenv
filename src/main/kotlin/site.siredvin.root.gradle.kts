@@ -11,6 +11,13 @@ val projectGroup = properties["projectGroup"] ?: "site.siredvin"
 val rootProjectDir = projectDir
 
 fun setupSubprojectExternal(subproject: Project) {
+    subproject.apply(plugin = "maven-publish")
+    subproject.apply(plugin = "com.diffplug.spotless")
+    subproject.apply(plugin = "site.siredvin.base")
+    subproject.apply(plugin = "idea")
+    if (subprojectShaking.withKotlin.get()) {
+        subproject.apply(plugin = "kotlin")
+    }
     val javaVersion = subprojectShaking.javaVersion.get()
     subproject.java {
         toolchain { languageVersion.set(JavaLanguageVersion.of(javaVersion.toString())) }
@@ -32,14 +39,7 @@ fun setupSubprojectExternal(subproject: Project) {
             kotlinOptions { jvmTarget = javaVersion.toString() }
         }
     }
-    subproject.apply(plugin = "maven-publish")
-    subproject.apply(plugin = "com.diffplug.spotless")
-    subproject.apply(plugin = "site.siredvin.base")
     subproject.apply(plugin = "site.siredvin.linting")
-    subproject.apply(plugin = "idea")
-    if (subprojectShaking.withKotlin.get()) {
-        subproject.apply(plugin = "kotlin")
-    }
 
     subproject.extra["curseforgeKey"] = secretEnv["CURSEFORGE_KEY"] ?: System.getenv("CURSEFORGE_KEY") ?: ""
     subproject.extra["modrinthKey"] = secretEnv["MODRINTH_KEY"] ?: System.getenv("MODRINTH_KEY") ?: ""
