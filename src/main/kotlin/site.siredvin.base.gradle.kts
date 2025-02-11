@@ -8,6 +8,7 @@ repositories {
         name = "SirEdvin's Minecraft repository"
         content {
             includeGroup("cc.tweaked")
+            includeGroup("dan200.computercraf")
             includeGroup("org.squiddev")
             includeGroup("fuzs.forgeconfigapiport")
             includeGroup("site.siredvin")
