@@ -14,7 +14,7 @@ spotless {
     fun FormatExtension.defaults() {
         endWithNewline()
         trimTrailingWhitespace()
-        indentWithSpaces(4)
+        leadingTabsToSpaces(4)
     }
 
     java {
