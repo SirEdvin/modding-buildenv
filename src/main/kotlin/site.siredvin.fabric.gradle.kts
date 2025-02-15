@@ -13,6 +13,7 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
         if (commonProjectName.isNotEmpty()) {
             implementation(project(":$commonProjectName")) {
                 exclude("cc.tweaked")
+                exclude("dan200.computercraft")
             }
         }
     }
