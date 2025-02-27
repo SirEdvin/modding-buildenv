@@ -44,7 +44,7 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
                 args(
                     "--mod", modBaseName, "--all",
                     "--output", file("src/generated/resources/"),
-                    "--existing", project(":core").file("src/main/resources/"),
+                    "--existing", project(":$commonProjectName").file("src/main/resources/"),
                     "--existing", file("src/main/resources/"),
                 )
             }
@@ -60,6 +60,7 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
             compileOnly(project(":$commonProjectName")) {
                 exclude("cc.tweaked")
                 exclude("fuzs.forgeconfigapiport")
+                exclude("dan200.computercraft")
             }
         }
     }
