@@ -5,7 +5,7 @@ plugins {
     id("org.spongepowered.mixin")
 }
 
-fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: String, useMixins: Boolean, useJarJar: Boolean, versionMappings: Map<String, String>) {
+fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: String, useMixins: Boolean, useJarJar: Boolean, versionMappings: Map<String, String>, mixinName: String) {
     val minecraftVersion: String by targetProject.extra
     val modBaseName: String by targetProject.extra
 
@@ -67,8 +67,8 @@ fun configureForge(targetProject: Project, useAT: Boolean, commonProjectName: St
 
     if (useMixins) {
         targetProject.mixin {
-            add(targetProject.sourceSets.main.get(), "$modBaseName.refmap.json")
-            config("$modBaseName.mixins.json")
+            add(targetProject.sourceSets.main.get(), "$mixinName.refmap.json")
+            config("$mixinName.mixins.json")
         }
         targetProject.dependencies {
             annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
@@ -140,14 +140,18 @@ class ForgeShakingExtension(private val targetProject: Project) {
     val commonProjectName: Property<String> = targetProject.objects.property(String::class.java)
     val useAT: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useMixins: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val mixinName: Property<String> = targetProject.objects.property(String::class.java)
     val useJarJar: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val extraVersionMappings: MapProperty<String, String> = targetProject.objects.mapProperty(String::class.java, String::class.java)
 
     fun shake() {
+        val modBaseName: String by targetProject.extra
+
         useMixins.convention(false)
         useJarJar.convention(false)
         extraVersionMappings.convention(emptyMap())
-        configureForge(targetProject, useAT.get(), commonProjectName.get(), useMixins.get(), useJarJar.get(), extraVersionMappings.get())
+        mixinName.convention(modBaseName)
+        configureForge(targetProject, useAT.get(), commonProjectName.get(), useMixins.get(), useJarJar.get(), extraVersionMappings.get(), mixinName.get())
     }
 }
 
