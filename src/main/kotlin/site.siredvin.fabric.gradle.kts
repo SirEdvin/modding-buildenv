@@ -3,9 +3,8 @@ plugins {
     id("fabric-loom")
 }
 
-fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectName: String, createRefmap: Boolean, versionMappings: Map<String, String>, stablePlayer: Boolean) {
+fun configureFabric(targetProject: Project, projectName: String, accessWidener: File?, commonProjectName: String, createRefmap: Boolean, versionMappings: Map<String, String>, stablePlayer: Boolean) {
     val minecraftVersion: String by targetProject.extra
-    val modBaseName: String by targetProject.extra
 
     targetProject.dependencies {
         minecraft("com.mojang:minecraft:$minecraftVersion")
@@ -23,7 +22,7 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
             accessWidenerPath.set(accessWidener)
         }
         if (createRefmap) {
-            mixin.defaultRefmapName.set("$modBaseName.refmap.json")
+            mixin.defaultRefmapName.set("$projectName.refmap.json")
         }
         runs {
             named("client") {
@@ -37,7 +36,7 @@ fun configureFabric(targetProject: Project, accessWidener: File?, commonProjectN
             create("data") {
                 client()
                 vmArg("-Dfabric-api.datagen")
-                vmArg("-Dfabric-api.datagen.modid=$modBaseName")
+                vmArg("-Dfabric-api.datagen.modid=$projectName")
                 vmArg("-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}")
                 vmArg("-Dfabric-api.datagen.strict-validation")
             }
@@ -90,12 +89,17 @@ class FabricShakingExtension(private val targetProject: Project) {
     val createRefmap: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val extraVersionMappings: MapProperty<String, String> = targetProject.objects.mapProperty(String::class.java, String::class.java)
     val stablePlayer: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val projectName: Property<String> = targetProject.objects.property(String::class.java)
 
     fun shake() {
         stablePlayer.convention(false)
         createRefmap.convention(false)
         extraVersionMappings.convention(emptyMap())
-        configureFabric(targetProject, accessWidener.orNull, commonProjectName.get(), createRefmap.get(), extraVersionMappings.get(), stablePlayer.get())
+        if (targetProject.extra.has("modBaseName")) {
+            val modBaseName: String by targetProject.extra
+            projectName.convention(modBaseName)
+        }
+        configureFabric(targetProject, projectName.get(), accessWidener.orNull, commonProjectName.get(), createRefmap.get(), extraVersionMappings.get(), stablePlayer.get())
     }
 }
 

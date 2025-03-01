@@ -58,19 +58,24 @@ fun connectIntegrationRepositories(targetProject: Project) {
 class BaseShakingExtension(private val targetProject: Project) {
     val projectPart: Property<String> = targetProject.objects.property(String::class.java)
     val integrationRepositories: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
+    val projectName: Property<String> = targetProject.objects.property(String::class.java)
 
     fun shake() {
         val minecraftVersion: String by targetProject.extra
-        val modBaseName: String by targetProject.extra
         val modVersion: String by targetProject.extra
 
         integrationRepositories.convention(false)
+
+        if (targetProject.extra.has("modBaseName")) {
+            val modBaseName: String by targetProject.extra
+            projectName.convention(modBaseName)
+        }
 
         if (integrationRepositories.get()) {
             connectIntegrationRepositories(targetProject)
         }
         targetProject.base {
-            archivesName.set("$modBaseName-${projectPart.get()}-$minecraftVersion")
+            archivesName.set("${projectName.get()}-${projectPart.get()}-$minecraftVersion")
             version = modVersion
         }
 
