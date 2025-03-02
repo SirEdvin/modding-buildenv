@@ -88,6 +88,7 @@ fun configureForge(targetProject: Project, projectName: String, useAT: Boolean, 
             val basePropertyMap = mutableMapOf(
                 "forgeVersion" to forgeVersion,
                 "file" to mapOf("jarVersion" to targetProject.version),
+                "version" to targetProject.version,
             )
             versionMappings.entries.forEach {
                 inputs.property("${it.key}Version", extractedLibs.findVersion(it.value).get())
