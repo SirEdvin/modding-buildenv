@@ -6,7 +6,13 @@ plugins {
 }
 
 class PublishingShakingExtension(private val targetProject: Project) {
+    val projectVersion: Property<String> = targetProject.objects.property(String::class.java)
+
     fun shake() {
+        if (targetProject.extra.has("modVersion")) {
+            val modVersion: String by targetProject.extra
+            projectVersion.convention(modVersion)
+        }
         targetProject.publishing {
             publications {
                 register<MavenPublication>("maven") {
@@ -16,8 +22,7 @@ class PublishingShakingExtension(private val targetProject: Project) {
             }
 
             repositories {
-                val modVersion: String by targetProject.extra
-                val isUnstable = modVersion.split("-").size > 1
+                val isUnstable = projectVersion.get().split("-").size > 1
                 if (isUnstable) {
                     maven("https://mvn.siredvin.site/snapshots") {
                         name = "SirEdvin"

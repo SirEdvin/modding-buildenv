@@ -18,8 +18,7 @@ plugins {
 
 fun configureGithubAndChangelog(config: GithubShakingExtension) {
     val minecraftVersion: String by config.targetProject.extra
-    val modVersion: String by config.targetProject.extra
-    val isUnstable = modVersion.split("-").size > 1
+    val isUnstable = config.projectVersion.get().split("-").size > 1
 
     val secretEnv = collectSecrets()
     val githubToken = secretEnv["GITHUB_TOKEN"] ?: System.getenv("GITHUB_TOKEN") ?: ""
@@ -38,8 +37,8 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
     }
 
     config.targetProject.githubRelease {
-        this.tagName.set("v$minecraftVersion-$modVersion")
-        this.releaseName.set("v$minecraftVersion-$modVersion")
+        this.tagName.set("v$minecraftVersion-${config.projectVersion.get()}")
+        this.releaseName.set("v$minecraftVersion-${config.projectVersion.get()}")
         owner.set(config.projectOwner.get())
         repo.set(config.projectRepo.get())
         setToken(githubToken)
@@ -78,9 +77,9 @@ fun configureGithubAndChangelog(config: GithubShakingExtension) {
                 .writeValueAsString(
                     mapOf(
                         "status" to """
-            New #${config.mastodonProjectName.get()}, addon for #ComputerCraft  release! Version $modVersion for minecraft $minecraftVersion released!
+            New #${config.mastodonProjectName.get()}, addon for #ComputerCraft  release! Version ${config.projectVersion.get()} for minecraft $minecraftVersion released!
             
-            You can find more details by github release notes: https://github.com/${config.projectOwner.get()}/${config.projectRepo.get()}/releases/tag/v$minecraftVersion-$modVersion
+            You can find more details by github release notes: https://github.com/${config.projectOwner.get()}/${config.projectRepo.get()}/releases/tag/v$minecraftVersion-${config.projectVersion.get()}
             
             #ModdedMinecraft #fabricmc #minecraftforge
         """.trimIndent()
@@ -113,6 +112,7 @@ class GithubShakingExtension(val targetProject: Project) {
     val useForgeJarJar: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val mastodonProjectName: Property<String> = targetProject.objects.property(String::class.java)
     val mastodonTags: ListProperty<String> = targetProject.objects.listProperty(String::class.java)
+    val projectVersion: Property<String> = targetProject.objects.property(String::class.java)
     fun shake() {
         val modBaseName: String by targetProject.extra
         projectOwner.convention("siredvin")
@@ -128,8 +128,12 @@ class GithubShakingExtension(val targetProject: Project) {
         })
         mastodonTags.convention(listOf())
 
-        val modVersion: String by targetProject.extra
-        val isUnstable = modVersion.split("-").size > 1
+        if (targetProject.extra.has("modVersion")) {
+            val modVersion: String by targetProject.extra
+            projectVersion.convention(modVersion)
+        }
+
+        val isUnstable = projectVersion.get().split("-").size > 1
         preRelease.convention(isUnstable)
 
         configureGithubAndChangelog(this)
