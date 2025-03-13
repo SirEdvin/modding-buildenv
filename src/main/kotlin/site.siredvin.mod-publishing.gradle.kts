@@ -42,7 +42,6 @@ class ModPublishingExtension(private val targetProject: Project) {
                 unreleasedTerm.set("[Unreleased]")
                 groups.set(listOf())
             }
-
             val publishCurseForge by targetProject.tasks.registering(TaskPublishCurseForge::class) {
                 group = PublishingPlugin.PUBLISH_TASK_GROUP
                 description = "Upload artifacts to CurseForge"
@@ -64,31 +63,35 @@ class ModPublishingExtension(private val targetProject: Project) {
                 } catch (ignored: UnknownTaskException) {
                 }
             }
+        }
 
-            targetProject.modrinth {
-                token.set(modrinthKey)
-                projectId.set(MODRINTH_ID)
-                versionNumber.set("$minecraftVersion-${targetProject.version}")
-                versionName.set("$minecraftVersion-${targetProject.version}")
-                versionType.set(MODRINTH_RELEASE_TYPE)
-                uploadFile.set(output.get())
-                gameVersions.add(minecraftVersion)
+        targetProject.modrinth {
+            token.set(modrinthKey)
+            projectId.set(MODRINTH_ID)
+            versionNumber.set("$minecraftVersion-${targetProject.version}")
+            versionName.set("$minecraftVersion-${targetProject.version}")
+            versionType.set(if (isUnstable) "alpha" else MODRINTH_RELEASE_TYPE)
+            uploadFile.set(output.get())
+            gameVersions.add(minecraftVersion)
+            if (isUnstable) {
+                changelog.set("Unstable version, please don't use it!")
+            } else {
                 changelog.set(targetProject.provider {
                         targetProject.changelog.renderItem(
                             targetProject.changelog.get(modVersion).withHeader(false),
                         )
                     }
                 )
-                dependencies {
-                    requiredDependencies.get().forEach(required::project)
-                    requiredDependenciesModrinth.get().forEach(required::project)
-                }
             }
+            dependencies {
+                requiredDependencies.get().forEach(required::project)
+                requiredDependenciesModrinth.get().forEach(required::project)
+            }
+        }
 
-            try {
-                targetProject.tasks.getByName("modrinth").dependsOn(targetProject.tasks.getByName("check"))
-            } catch (ignored: UnknownTaskException) {
-            }
+        try {
+            targetProject.tasks.getByName("modrinth").dependsOn(targetProject.tasks.getByName("check"))
+        } catch (ignored: UnknownTaskException) {
         }
     }
 }
