@@ -5,7 +5,7 @@ plugins {
     id("org.spongepowered.mixin")
 }
 
-fun configureForge(targetProject: Project, projectName: String, useAT: Boolean, commonProjectName: String, useMixins: Boolean, useJarJar: Boolean, versionMappings: Map<String, String>) {
+fun configureForge(targetProject: Project, projectName: String, useAT: Boolean, commonProjectName: String, useMixins: Boolean, useJarJar: Boolean, versionMappings: Map<String, String>,rawVersionMappings: Map<String, String>) {
     val minecraftVersion: String by targetProject.extra
 
     targetProject.minecraft {
@@ -90,6 +90,9 @@ fun configureForge(targetProject: Project, projectName: String, useAT: Boolean, 
                 "file" to mapOf("jarVersion" to targetProject.version),
                 "version" to targetProject.version,
             )
+            rawVersionMappings.entries.forEach {
+                basePropertyMap["${it.key}Version"] = it.value
+            }
             versionMappings.entries.forEach {
                 inputs.property("${it.key}Version", extractedLibs.findVersion(it.value).get())
                 basePropertyMap["${it.key}Version"] = extractedLibs.findVersion(it.value).get()
@@ -143,16 +146,18 @@ class ForgeShakingExtension(private val targetProject: Project) {
     val useMixins: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val useJarJar: Property<Boolean> = targetProject.objects.property(Boolean::class.java)
     val extraVersionMappings: MapProperty<String, String> = targetProject.objects.mapProperty(String::class.java, String::class.java)
+    val extraRawVersionMappings: MapProperty<String, String> = targetProject.objects.mapProperty(String::class.java, String::class.java)
 
     fun shake() {
         useMixins.convention(false)
         useJarJar.convention(false)
         extraVersionMappings.convention(emptyMap())
+        extraRawVersionMappings.convention(emptyMap())
         if (targetProject.extra.has("modBaseName")) {
             val modBaseName: String by targetProject.extra
             projectName.convention(modBaseName)
         }
-        configureForge(targetProject, projectName.get(), useAT.get(), commonProjectName.get(), useMixins.get(), useJarJar.get(), extraVersionMappings.get())
+        configureForge(targetProject, projectName.get(), useAT.get(), commonProjectName.get(), useMixins.get(), useJarJar.get(), extraVersionMappings.get(), extraRawVersionMappings.get())
     }
 }
 
