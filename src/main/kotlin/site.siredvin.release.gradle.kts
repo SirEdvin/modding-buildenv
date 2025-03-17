@@ -114,9 +114,11 @@ class GithubShakingExtension(val targetProject: Project) {
     val mastodonTags: ListProperty<String> = targetProject.objects.listProperty(String::class.java)
     val projectVersion: Property<String> = targetProject.objects.property(String::class.java)
     fun shake() {
-        val modBaseName: String by targetProject.extra
         projectOwner.convention("siredvin")
-        projectRepo.convention(modBaseName)
+        if (targetProject.extra.has("modBaseName")) {
+            val modBaseName: String by targetProject.extra
+            projectRepo.convention(modBaseName)
+        }
         useFabric.convention(true)
         useForge.convention(true)
         useRoot.convention(false)
