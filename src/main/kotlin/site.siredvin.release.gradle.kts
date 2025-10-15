@@ -8,6 +8,8 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.file.Paths
+import java.util.Locale
+import java.util.Locale.getDefault
 import kotlin.io.path.pathString
 
 plugins {
@@ -126,7 +128,7 @@ class GithubShakingExtension(val targetProject: Project) {
         useForgeJarJar.convention(false)
         dryRun.convention(false)
         mastodonProjectName.convention(provider {
-            projectRepo.get().capitalize()
+            projectRepo.get().replaceFirstChar { if (it.isLowerCase()) it.titlecase(getDefault()) else it.toString() }
         })
         mastodonTags.convention(listOf())
 

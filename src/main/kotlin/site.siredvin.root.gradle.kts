@@ -1,5 +1,6 @@
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extra
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import site.siredvin.peripheralium.gradle.collectSecrets
 
 plugins {
@@ -33,10 +34,8 @@ fun setupSubprojectExternal(subproject: Project) {
             options.release.set(javaVersion.toString().toInt())
         }
         withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-            kotlinOptions {
-                allWarningsAsErrors = true
-            }
-            kotlinOptions { jvmTarget = javaVersion.toString() }
+            compilerOptions.allWarningsAsErrors.set(true)
+            compilerOptions.jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
         }
     }
     subproject.apply(plugin = "site.siredvin.linting")
