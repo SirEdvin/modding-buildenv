@@ -9,6 +9,7 @@ forgeGradle = "6.+"
 librarian = "1.+"
 minotaur = "2.+"
 mixinGradle = "0.7.+"
+modDevGradle = "2.0.141"
 #nullAway = "0.9.9"
 quiltflower = "1.8.0"
 spotless = "7.0.2"
@@ -20,6 +21,7 @@ githubRelease = "2.5.2"
 plugin-curseForgeGradle = { module = "net.darkhax.curseforgegradle:CurseForgeGradle", version.ref = "curseForgeGradle" }
 plugin-loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
 plugin-forgeGradle = { module = "net.minecraftforge.gradle:ForgeGradle", version.ref = "forgeGradle" }
+plugin-modDevGradle = { module = "net.neoforged.moddev:net.neoforged.moddev.gradle.plugin", version.ref = "modDevGradle" }
 plugin-mixinGradle = { module = "org.spongepowered:mixingradle", version.ref = "mixinGradle" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-librarian = { module = "org.parchmentmc:librarian", version.ref = "librarian" }
