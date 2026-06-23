@@ -33,6 +33,8 @@ repositories {
         content {
             includeGroup("net.minecraftforge")
             includeGroup("net.minecraftforge.gradle")
+            includeGroup("net.neoforged")
+            includeGroup("net.neoforged.moddev")
             includeGroup("org.parchmentmc")
             includeGroup("org.parchmentmc.feather")
             includeGroup("org.parchmentmc.data")
@@ -51,6 +53,7 @@ dependencies {
     implementation(libs.plugin.minotaur)
     implementation(libs.plugin.changelog)
     implementation(libs.plugin.forgeGradle)
+    implementation(libs.plugin.modDevGradle)
     implementation(libs.plugin.librarian)
     implementation(libs.plugin.mixinGradle)
     implementation(libs.plugin.taskTree)
