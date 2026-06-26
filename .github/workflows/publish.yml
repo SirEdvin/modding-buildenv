@@ -1,0 +1,82 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v[0-9]*'
+      - '[0-9]*'
+    paths:
+      - '.github/workflows/publish.yml'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'gradlew.bat'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    env:
+      ORG_GRADLE_PROJECT_SirEdvinUsername: ${{ secrets.SIR_EDVIN_MAVEN_USERNAME }}
+      ORG_GRADLE_PROJECT_SirEdvinPassword: ${{ secrets.SIR_EDVIN_MAVEN_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Read project version
+        id: version
+        shell: bash
+        run: |
+          version=$(awk -F= '$1 ~ /^[[:space:]]*projectVersion[[:space:]]*$/ { gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2); print $2; exit }' gradle.properties)
+          if [ -z "$version" ]; then
+            echo "projectVersion was not found in gradle.properties" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check Maven version
+        id: maven
+        shell: bash
+        run: |
+          artifact_url="https://mvn.siredvin.site/minecraft/site/siredvin/modding-buildenv/${{ steps.version.outputs.version }}/"
+          status=$(curl --location --silent --output /dev/null --write-out "%{http_code}" --head "$artifact_url")
+          case "$status" in
+            200)
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              echo "Version ${{ steps.version.outputs.version }} already exists at $artifact_url"
+              ;;
+            404)
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              echo "Version ${{ steps.version.outputs.version }} is absent from $artifact_url"
+              ;;
+            *)
+              echo "Unexpected HTTP status $status from $artifact_url" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Check
+        run: ./gradlew --no-daemon check
+
+      - name: Publish
+        if: steps.maven.outputs.exists == 'false'
+        run: ./gradlew --no-daemon publishAllPublicationsToSirEdvinRepository
