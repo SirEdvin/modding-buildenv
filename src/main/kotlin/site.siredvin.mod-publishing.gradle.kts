@@ -51,6 +51,8 @@ class ModPublishingExtension(private val targetProject: Project) {
                 val mainFile = upload(CURSEFORGE_ID, output.get().archiveFile)
                 mainFile.releaseType = CURSEFORGE_RELEASE_TYPE
                 mainFile.gameVersions.add(minecraftVersion)
+                // ponytail: CurseForgeGradle already detects Fabric and Forge, but not NeoForge.
+                if (targetProject.pluginManager.hasPlugin("net.neoforged.moddev")) mainFile.addModLoader("NeoForge")
                 mainFile.changelog = KotlinClosure0({
                     targetProject.changelog.renderItem(targetProject.changelog.get(modVersion).withHeader(false))
                 })
