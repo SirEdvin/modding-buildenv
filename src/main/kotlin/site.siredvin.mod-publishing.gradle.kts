@@ -51,6 +51,7 @@ class ModPublishingExtension(private val targetProject: Project) {
                 val mainFile = upload(CURSEFORGE_ID, output.get().archiveFile)
                 mainFile.releaseType = CURSEFORGE_RELEASE_TYPE
                 mainFile.gameVersions.add(minecraftVersion)
+                mainFile.addEnvironment("Client", "Server")
                 when {
                     targetProject.pluginManager.hasPlugin("fabric-loom") -> mainFile.addModLoader("Fabric")
                     targetProject.pluginManager.hasPlugin("net.minecraftforge.gradle") -> mainFile.addModLoader("Forge")
