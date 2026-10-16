@@ -65,6 +65,8 @@ fun configureFabric(targetProject: Project, projectName: String, accessWidener: 
                 basePropertyMap["${it.key}Version"] = it.value
             }
 
+            inputs.properties(basePropertyMap)
+            inputs.file(targetProject.buildFile)
             filesMatching("fabric.mod.json") {
                 expand(basePropertyMap)
             }

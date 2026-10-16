@@ -97,6 +97,8 @@ fun configureForge(targetProject: Project, projectName: String, useAT: Boolean, 
                 inputs.property("${it.key}Version", extractedLibs.findVersion(it.value).get())
                 basePropertyMap["${it.key}Version"] = extractedLibs.findVersion(it.value).get()
             }
+            inputs.properties(basePropertyMap)
+            inputs.file(targetProject.buildFile)
             filesMatching("META-INF/mods.toml") {
                 expand(basePropertyMap)
             }

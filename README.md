@@ -14,3 +14,11 @@ Configure these GitHub repository secrets before publishing:
 
 - `SIR_EDVIN_MAVEN_USERNAME`
 - `SIR_EDVIN_MAVEN_PASSWORD`
+
+## Stonecutter consumers
+
+Stonecutter is owned by the consuming project's settings, not this toolkit. Stable 0.9.8 works with Gradle 9 consumers; the toolkit itself retains its Gradle 8 wrapper because generating the legacy ForgeGradle convention accessors is not supported on Gradle 9. Build the toolkit with its own wrapper and use a local file Maven repository for consumer verification, rather than a Gradle 9 composite build. Do not commit local repositories or consume an unpublished version in CI.
+
+Version 0.9.3 tracks the complete loader metadata expansion map and shared build script as `processResources` inputs for Fabric, Forge, and NeoForge. Changing a raw dependency version must regenerate metadata even if the mod's own version is unchanged. Test this without `clean` or `--rerun-tasks`, then inspect the resulting resource/JAR.
+
+Consumers still own unique internal module identities, public Maven coordinates/capabilities, shared-source overlay precedence, effective access-transformer inputs, and `createMinecraftArtifacts` ordering after `stonecutterGenerate`. Check all version/loader nodes in both active states, plus fresh nonempty GameTest reports. A successful Minecraft process can still have failed during mod loading.

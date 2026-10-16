@@ -106,6 +106,8 @@ fun configureNeoForge(
                 inputs.property("${it.key}Version", versionForValue.get())
                 basePropertyMap["${it.key}Version"] = versionForValue.get()
             }
+            inputs.properties(basePropertyMap)
+            inputs.file(targetProject.buildFile)
             filesMatching("META-INF/neoforge.mods.toml") {
                 expand(basePropertyMap)
             }
