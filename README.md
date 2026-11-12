@@ -14,6 +14,9 @@ Configure these GitHub repository secrets before publishing:
 
 - `SIR_EDVIN_MAVEN_USERNAME`
 - `SIR_EDVIN_MAVEN_PASSWORD`
+- `REPSY_TOKEN` (optional; Repsy deploy token)
+
+Repsy (`https://repo.repsy.io/siredvin/default`) is a public backup repository. When `REPSY_TOKEN` is set, the workflow also publishes there if the version is absent, even if the SirEdvin Maven is unavailable. Consumers can add it to `pluginManagement.repositories` as a fallback.
 
 ## Stonecutter consumers
 

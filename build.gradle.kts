@@ -42,6 +42,12 @@ repositories {
             includeGroup("net.fabricmc")
         }
     }
+    // Upstream fallbacks for when the SirEdvin mirror is unavailable
+    maven("https://maven.minecraftforge.net")
+    maven("https://maven.neoforged.net/releases")
+    maven("https://maven.parchmentmc.org")
+    maven("https://repo.spongepowered.org/repository/maven-public")
+    maven("https://maven.fabricmc.net")
 }
 
 dependencies {
@@ -106,6 +112,11 @@ publishing {
     repositories {
         maven("https://mvn.siredvin.site/minecraft") {
             name = "SirEdvin"
+            credentials(PasswordCredentials::class)
+        }
+        // Backup repository; Repsy accepts an API/deploy token as the password
+        maven("https://repo.repsy.io/siredvin/default") {
+            name = "Repsy"
             credentials(PasswordCredentials::class)
         }
     }

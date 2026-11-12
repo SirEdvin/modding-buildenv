@@ -28,6 +28,8 @@ jobs:
     env:
       ORG_GRADLE_PROJECT_SirEdvinUsername: ${{ secrets.SIR_EDVIN_MAVEN_USERNAME }}
       ORG_GRADLE_PROJECT_SirEdvinPassword: ${{ secrets.SIR_EDVIN_MAVEN_PASSWORD }}
+      ORG_GRADLE_PROJECT_RepsyUsername: siredvin
+      ORG_GRADLE_PROJECT_RepsyPassword: ${{ secrets.REPSY_TOKEN }}
 
     steps:
       - name: Checkout
@@ -55,6 +57,8 @@ jobs:
 
       - name: Check Maven version
         id: maven
+        # SirEdvin Maven outages must not block the Repsy backup publish
+        continue-on-error: true
         shell: bash
         run: |
           artifact_url="https://mvn.siredvin.site/minecraft/site/siredvin/modding-buildenv/${{ steps.version.outputs.version }}/"
@@ -80,3 +84,15 @@ jobs:
       - name: Publish
         if: steps.maven.outputs.exists == 'false'
         run: ./gradlew --no-daemon publishAllPublicationsToSirEdvinRepository
+
+      - name: Check Repsy version
+        id: repsy
+        shell: bash
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          status=$(curl --location --silent --output /dev/null --write-out "%{http_code}" --head "https://repo.repsy.io/siredvin/default/site/siredvin/modding-buildenv/$version/modding-buildenv-$version.pom")
+          echo "exists=$([ "$status" = 200 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to Repsy
+        if: steps.repsy.outputs.exists == 'false' && env.ORG_GRADLE_PROJECT_RepsyPassword != ''
+        run: ./gradlew --no-daemon publishAllPublicationsToRepsyRepository
