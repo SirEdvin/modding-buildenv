@@ -22,18 +22,17 @@ class PublishingShakingExtension(private val targetProject: Project) {
             }
 
             repositories {
-                val isUnstable = projectVersion.get().split("-").size > 1
-                if (isUnstable) {
-                    maven("https://mvn.siredvin.site/snapshots") {
-                        name = "SirEdvin"
-                        credentials(PasswordCredentials::class)
-                    }
-                } else {
-                    maven("https://mvn.siredvin.site/minecraft") {
-                        name = "SirEdvin"
-                        credentials(PasswordCredentials::class)
-                    }
+                // Repsy accepts an API/deploy token as the password
+                maven("https://repo.repsy.io/siredvin/default") {
+                    name = "Repsy"
+                    credentials(PasswordCredentials::class)
                 }
+            }
+        }
+        // There is no snapshots repository: refuse before anything is built or uploaded
+        targetProject.gradle.taskGraph.whenReady {
+            if (projectVersion.get().endsWith("-SNAPSHOT") && allTasks.any { it is PublishToMavenRepository && it.project == targetProject }) {
+                throw GradleException("Refusing to publish ${projectVersion.get()}: -SNAPSHOT versions cannot be published, the snapshots repository was retired. Use publishToMavenLocal or a release version.")
             }
         }
         targetProject.tasks.withType(PublishToMavenRepository::class.java) {

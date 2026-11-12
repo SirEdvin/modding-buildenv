@@ -6,17 +6,23 @@ For now it very specific, so please, don't use it by youself :)
 
 ## Publishing
 
-GitHub Actions publishes artifacts to the SirEdvin Maven repository when `projectVersion` in `gradle.properties` changes and the workflow runs from `main`, `master`, a version-like tag, or manual dispatch.
+Repsy (`https://repo.repsy.io/siredvin/default`) is the only repository for `site.siredvin` artifacts. The former SirEdvin Maven (release and snapshots) is retired and is no longer referenced anywhere.
 
-The workflow checks `https://mvn.siredvin.site/minecraft/site/siredvin/modding-buildenv/<version>/` first. If that version already exists, it still runs `./gradlew --no-daemon check` but skips publishing to avoid duplicate publish failures. If the version is absent, it runs `./gradlew --no-daemon publishAllPublicationsToSirEdvinRepository`.
+GitHub Actions publishes to Repsy when `projectVersion` in `gradle.properties` changes and the workflow runs from `main`, `master`, a version-like tag, or manual dispatch. It runs `./gradlew --no-daemon check`, then probes the Repsy POM for the version. If it already exists, publishing is skipped to avoid duplicate publish failures; otherwise it runs `./gradlew --no-daemon publishAllPublicationsToRepsyRepository`.
 
-Configure these GitHub repository secrets before publishing:
+Required GitHub repository secret: `REPSY_TOKEN` (Repsy deploy token; the workflow maps it to `ORG_GRADLE_PROJECT_RepsyPassword`, with `RepsyUsername` = `siredvin`). A missing token now fails the publish step instead of silently skipping it.
 
-- `SIR_EDVIN_MAVEN_USERNAME`
-- `SIR_EDVIN_MAVEN_PASSWORD`
-- `REPSY_TOKEN` (optional; Repsy deploy token)
+### Changes in 0.9.4 for consumers
 
-Repsy (`https://repo.repsy.io/siredvin/default`) is a public backup repository. When `REPSY_TOKEN` is set, the workflow also publishes there if the version is absent, even if the SirEdvin Maven is unavailable. Consumers can add it to `pluginManagement.repositories` as a fallback.
+| Before | Now |
+| --- | --- |
+| `publishAllPublicationsToSirEdvinRepository` / `publishToSirEdvinRepository` tasks | **Removed.** Use `publishAllPublicationsToRepsyRepository` / `publishMavenPublicationToRepsyRepository`. |
+| Gradle properties `SirEdvinUsername` / `SirEdvinPassword` (secrets `SIR_EDVIN_MAVEN_USERNAME`, `SIR_EDVIN_MAVEN_PASSWORD`) | **Removed.** Use `RepsyUsername` / `RepsyPassword` (secret `REPSY_TOKEN`). |
+| Repository named `SirEdvin` (publishing) and `SirEdvin's Minecraft repository` (resolution) | **Removed.** Replaced by `Repsy`. |
+| Versions with a `-suffix` (for example `-rc.1`) went to the snapshots repository | Go to Repsy like any release. Only a literal `-SNAPSHOT` version is rejected, and only when a `publish*ToMavenRepository` task is in the task graph (`publishToMavenLocal` still works). |
+| `site.siredvin.base` resolved `cc.tweaked`, `dan200.computercraft`, `org.squiddev`, `fuzs.forgeconfigapiport`, `site.siredvin` from the mirror | Resolves them from Repsy (`site.siredvin*`), `maven.squiddev.cc`, and Fuzz's modresources, plus Forge, NeoForged, ParchmentMC, Sponge and Fabric upstreams, all with content filters. |
+
+The `Repsy` repository name and `RepsyUsername`/`RepsyPassword` credentials are unchanged. Consumers must drop the retired SirEdvin Maven from their own `pluginManagement.repositories`, and keep `Repsy` plus upstream plugin repositories (Forge, NeoForged, ParchmentMC, Sponge, Fabric) there with `site.siredvin.*` mapped to `site.siredvin:modding-buildenv:<version>`.
 
 ## Stonecutter consumers
 

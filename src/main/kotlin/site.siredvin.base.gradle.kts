@@ -4,21 +4,53 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven("https://mvn.siredvin.site/minecraft") {
-        name = "SirEdvin's Minecraft repository"
+    maven("https://repo.repsy.io/siredvin/default") {
+        name = "Repsy"
+        content {
+            includeGroupByRegex("site\\.siredvin.*")
+        }
+    }
+    maven("https://maven.squiddev.cc/") {
         content {
             includeGroup("cc.tweaked")
             includeGroup("dan200.computercraft")
             includeGroup("org.squiddev")
-            includeGroup("fuzs.forgeconfigapiport")
-            includeGroup("site.siredvin")
         }
     }
-    maven("https://mvn.siredvin.site/snapshots") {
-        name = "SirEdvin's Minecraft repository"
+    maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") {
         content {
-            includeGroup("site.siredvin")
-            includeGroup("cc.tweaked")
+            includeGroup("fuzs.forgeconfigapiport")
+        }
+    }
+    maven("https://maven.minecraftforge.net/") {
+        content {
+            includeGroup("net.minecraftforge")
+            includeGroup("net.minecraftforge.gradle")
+        }
+    }
+    maven("https://maven.neoforged.net/releases/") {
+        content {
+            includeGroup("net.neoforged")
+            includeGroupByRegex("net\\.neoforged\\..*")
+        }
+    }
+    maven("https://maven.parchmentmc.org/") {
+        content {
+            includeGroup("org.parchmentmc")
+            includeGroupByRegex("org\\.parchmentmc\\..*")
+        }
+    }
+    maven("https://repo.spongepowered.org/repository/maven-public/") {
+        content {
+            includeGroup("org.spongepowered")
+            includeGroupByRegex("org\\.spongepowered\\..*")
+        }
+    }
+    maven("https://maven.fabricmc.net/") {
+        content {
+            includeGroup("net.fabricmc")
+            includeGroup("fabric-loom")
+            includeGroupByRegex("net\\.fabricmc\\..*")
         }
     }
 }

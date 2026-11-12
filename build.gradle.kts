@@ -28,26 +28,38 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
 
-    maven("https://mvn.siredvin.site/minecraft") {
-        name = "SirEdvin's Minecraft repository"
+    // Upstream repositories for plugin resolution; the retired SirEdvin mirror is no longer used
+    maven("https://maven.minecraftforge.net") {
         content {
             includeGroup("net.minecraftforge")
             includeGroup("net.minecraftforge.gradle")
-            includeGroup("net.neoforged")
-            includeGroup("net.neoforged.moddev")
-            includeGroup("org.parchmentmc")
-            includeGroup("org.parchmentmc.feather")
-            includeGroup("org.parchmentmc.data")
-            includeGroup("org.spongepowered")
-            includeGroup("net.fabricmc")
         }
     }
-    // Upstream fallbacks for when the SirEdvin mirror is unavailable
-    maven("https://maven.minecraftforge.net")
-    maven("https://maven.neoforged.net/releases")
-    maven("https://maven.parchmentmc.org")
-    maven("https://repo.spongepowered.org/repository/maven-public")
-    maven("https://maven.fabricmc.net")
+    maven("https://maven.neoforged.net/releases") {
+        content {
+            includeGroup("net.neoforged")
+            includeGroupByRegex("net\\.neoforged\\..*")
+        }
+    }
+    maven("https://maven.parchmentmc.org") {
+        content {
+            includeGroup("org.parchmentmc")
+            includeGroupByRegex("org\\.parchmentmc\\..*")
+        }
+    }
+    maven("https://repo.spongepowered.org/repository/maven-public") {
+        content {
+            includeGroup("org.spongepowered")
+            includeGroupByRegex("org\\.spongepowered\\..*")
+        }
+    }
+    maven("https://maven.fabricmc.net") {
+        content {
+            includeGroup("net.fabricmc")
+            includeGroup("fabric-loom")
+            includeGroupByRegex("net\\.fabricmc\\..*")
+        }
+    }
 }
 
 dependencies {
@@ -110,11 +122,7 @@ tasks.publish {
 
 publishing {
     repositories {
-        maven("https://mvn.siredvin.site/minecraft") {
-            name = "SirEdvin"
-            credentials(PasswordCredentials::class)
-        }
-        // Backup repository; Repsy accepts an API/deploy token as the password
+        // Repsy accepts an API/deploy token as the password
         maven("https://repo.repsy.io/siredvin/default") {
             name = "Repsy"
             credentials(PasswordCredentials::class)
