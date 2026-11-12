@@ -26,8 +26,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ORG_GRADLE_PROJECT_SirEdvinUsername: ${{ secrets.SIR_EDVIN_MAVEN_USERNAME }}
-      ORG_GRADLE_PROJECT_SirEdvinPassword: ${{ secrets.SIR_EDVIN_MAVEN_PASSWORD }}
       ORG_GRADLE_PROJECT_RepsyUsername: siredvin
       ORG_GRADLE_PROJECT_RepsyPassword: ${{ secrets.REPSY_TOKEN }}
 
@@ -55,35 +53,8 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Check Maven version
-        id: maven
-        # SirEdvin Maven outages must not block the Repsy backup publish
-        continue-on-error: true
-        shell: bash
-        run: |
-          artifact_url="https://mvn.siredvin.site/minecraft/site/siredvin/modding-buildenv/${{ steps.version.outputs.version }}/"
-          status=$(curl --location --silent --output /dev/null --write-out "%{http_code}" --head "$artifact_url")
-          case "$status" in
-            200)
-              echo "exists=true" >> "$GITHUB_OUTPUT"
-              echo "Version ${{ steps.version.outputs.version }} already exists at $artifact_url"
-              ;;
-            404)
-              echo "exists=false" >> "$GITHUB_OUTPUT"
-              echo "Version ${{ steps.version.outputs.version }} is absent from $artifact_url"
-              ;;
-            *)
-              echo "Unexpected HTTP status $status from $artifact_url" >&2
-              exit 1
-              ;;
-          esac
-
       - name: Check
         run: ./gradlew --no-daemon check
-
-      - name: Publish
-        if: steps.maven.outputs.exists == 'false'
-        run: ./gradlew --no-daemon publishAllPublicationsToSirEdvinRepository
 
       - name: Check Repsy version
         id: repsy
@@ -94,5 +65,5 @@ jobs:
           echo "exists=$([ "$status" = 200 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Publish to Repsy
-        if: steps.repsy.outputs.exists == 'false' && env.ORG_GRADLE_PROJECT_RepsyPassword != ''
+        if: steps.repsy.outputs.exists == 'false'
         run: ./gradlew --no-daemon publishAllPublicationsToRepsyRepository
